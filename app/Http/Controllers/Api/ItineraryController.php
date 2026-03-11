@@ -57,7 +57,7 @@ class ItineraryController extends Controller
         $itinerary = Itinerary::findOrFail($id);
 
         if($itinerary->user_id !== auth()->id()){
-            return response()->json(403);
+            return response()->json(['message' => 'unauthorized'] , 403);
         }
 
         $new = $request->validate([
@@ -80,7 +80,7 @@ class ItineraryController extends Controller
         $itinerary = Itinerary::findOrFail($id);
 
         if($itinerary->user_id !== auth()->id()){
-            return response()->json(403);
+            return response()->json(['message' => 'unauthorized'] , 403);
         }
 
         $itinerary->delete();
