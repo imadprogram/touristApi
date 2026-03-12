@@ -42,4 +42,11 @@ class AuthController extends Controller
             'token' => $token,
         ]);
     }
+
+
+    public function userStats(){
+        $stats = User::select(\DB::raw("EXTRACT(MONTH FROM created_at) as month"), \DB::raw('count(*) as total_users'))->groupBy('month')->get();
+
+        return response()->json($stats);
+    }
 }

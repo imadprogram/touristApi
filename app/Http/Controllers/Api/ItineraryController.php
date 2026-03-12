@@ -126,4 +126,19 @@ class ItineraryController extends Controller
 
         return response()->json(['message' => 'status changed']);
     }
+
+
+    public function popular(){
+
+        $popularItineraries = Itinerary::withCount('favoritedBy')->orderBy('favorited_by_count' , 'desc')->get();
+
+        return response()->json($popularItineraries);
+    }
+
+
+    public function categoryStats(){
+        $stats = Itinerary::select('category_id' , \DB::raw('count(*) as total_itineraries'))->groupBy('category_id')->get();
+
+        return response()->json($stats);
+    }
 }

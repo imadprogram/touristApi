@@ -6,6 +6,10 @@ use App\Http\Controllers\Api\ItineraryController;
 use App\Http\Controllers\Api\AuthController;
 
 
+
+Route::get('/itineraries/popular' , [ItineraryController::class , 'popular']);
+
+
 Route::middleware('auth:sanctum')->group(function () {
     
     Route::get('/itineraries' , [ItineraryController::class , 'index']);
@@ -16,6 +20,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/itineraries/{id}/favorite' , [ItineraryController::class , 'favorite']);
 });
+
+Route::get('/itineraries/stats/categories' , [ItineraryController::class , 'categoryStats']);
+Route::get('/users/stats/registrations' , [AuthController::class , 'userStats']);
 
 Route::post('/register' , [AuthController::class , 'register']);
 Route::post('/login' , [AuthController::class , 'login']);
