@@ -13,6 +13,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/itineraries/{id}' ,[ItineraryController::class , 'update']);
     Route::delete('/itineraries/{id}' ,[ItineraryController::class , 'destroy']);
     Route::get('/itineraries/{id}' ,[ItineraryController::class , 'show']);
+
+    Route::post('/itineraries/{id}/favorite' , [ItineraryController::class , 'favorite']);
 });
 
 Route::post('/register' , [AuthController::class , 'register']);

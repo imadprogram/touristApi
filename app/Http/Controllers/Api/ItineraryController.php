@@ -11,9 +11,24 @@ class ItineraryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $itineraries = Itinerary::all();
+        // started just the query with their destinations already (not fetched the data yet)
+        $query = Itinerary::with('destinations');
+
+        if($request->has('category_id')){
+            $query->where('category_id' , $request->category_id);
+        }
+
+        if($request->has('duration_days')){
+            $query->where('duration_days' , $request->duration_days);
+        }
+
+        if($request->has('title')){
+            $query->where('title' ,'like', '%'. $request->title . '%');
+        }
+
+        $itineraries = $query->get();
 
         return response()->json($itineraries);
     }
@@ -28,12 +43,25 @@ class ItineraryController extends Controller
             'title' => 'required|string',
             'duration_days' => 'required|integer',
             'image_url' => 'required|string',
+            'destinations' => 'required|array|min:2',
+            'destinations.*.name' => 'required|string',
+            'destinations.*.rental_location' => 'required|string',
+            'destinations.*.places_to_visit' => 'required|string',
+            'destinations.*.activities' => 'required|string',
+            'destinations.*.dishes_to_try' => 'required|string',
         ]);
 
         $itinerary = Itinerary::create([
             'user_id' => auth()->id(),
-            ...$validated,
+            'category_id' => $validated['category_id'],
+            'title' => $validated['title'],
+            'duration_days' => $validated['duration_days'],
+            'image_url' => $validated['image_url'],
         ]);
+
+        $itinerary->destinations()->createMany($validated['destinations']);
+        
+        $itinerary->load('destinations');
 
         return response()->json($itinerary, 201);
     }
@@ -86,5 +114,16 @@ class ItineraryController extends Controller
         $itinerary->delete();
 
         return response()->json(null , 204);
+    }
+
+    
+
+    public function favorite($id){
+        $itinerary = Itinerary::findOrFail($id);
+
+        // add it to favorites if not there , but if it was there it will remove it 
+        auth()->user()->favorites()->toggle($itinerary->id);
+
+        return response()->json(['message' => 'status changed']);
     }
 }
